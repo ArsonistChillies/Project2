@@ -1,26 +1,64 @@
-const gitForm = $('#gitForm');
+const API_KEY="AcmQLHVZiR8yOatnGZiYxPBe4NPqMdZu"
+let total_count = 0;
 
-gifForm.submit(e => {
-  e.preventDefault();
-  const searchTerm = $(".search").val();
-  const url = `https://api.giphy.com/v1/gifs/search?&q=${searchTerm}&limit=80&api_key=AcmQLHVZiR8yOatnGZiYxPBe4NPqMdZu`;
-  $.get(url)
-    .done(resp => {
-      showGiphs(resp.data.slice(0, 40));
-    })
-    .fail(console.log);
-});
+    const PAGE_SIZE=10;
+    let offset=0;
+    function handleClickRandom() {
+        console.log("handleClickRandom called");   
+        const search = "api.giphy.com/v1/gifs/random"; 
+        const elementOutputArea = document.getElementById("outputArea");
+        let url = `http://${search}?api_key=${API_KEY}`;
+        console.log('url=' + url);
 
-function showGiphs(dataArray) {
-  const results = document.querySelector(".results");
-  let output = "";
-  output = dataArray
-    .map(
-      imgData =>
-        `<a href="${imgData.images.original.url}" alt="${
-          imgData.title
-        }" target="_blank"><img src="${imgData.images.original.url}"></a>`
-    )
-    .join("");
-  $(".results").html(output);
-}
+        fetch(url, {method: "GET"})
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                const data = json.data;
+                console.log(data);
+                const url = json.data.images.fixed_height.url;
+                console.log(url);
+                let img=`<img src="${url}" alt="${data.title}" />`
+                elementOutputArea.innerHTML = `<div>${JSON.stringify(data.title)}</div>`;
+                elementOutputArea.innerHTML = img; 
+            });
+    }
+
+    function handleClickArray() {
+        console.log("handleClickArray called");   
+        const elementOutputArea = document.getElementById("outputArea");
+        const search = document.getElementById("search").value;
+        let url = `http://api.giphy.com/v1/gifs/search?q=${search}&api_key=${API_KEY}&limit=${PAGE_SIZE}&offset=${offset}`
+        console.log('url=' + url);
+
+        fetch(url, {method: "GET"})
+            .then((response) => response.json())
+            .then((json) => {
+                console.log(json);
+                console.log(json.pagination);
+                total_count = json.pagination.total_count;
+                elementOutputArea.innerHTML = "";
+                for (let data of json.data) {
+                    const url = data.images.fixed_height.url;
+                    let img=`<img src="${url}" alt="${data.title}" />`
+                    elementOutputArea.innerHTML += img;
+                    
+                }
+            });
+    }
+
+
+   function handleClickNext() {
+        if (offset < total_count) {    
+            offset += PAGE_SIZE;
+            handleClickArray();
+        }
+   }    
+
+    function handleClickPrev() {
+        console.log(offset);
+        if (offset >= PAGE_SIZE) {
+            offset -= PAGE_SIZE;
+            handleClickArray();
+        }
+    } 
