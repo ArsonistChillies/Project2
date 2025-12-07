@@ -1,2 +1,5 @@
-# Project2
-This website with have a search engine in it
+# Project 2: Website with a Search Engine
+
+---
+
+**Name: Kyran Detamore**
