@@ -1,7 +1,7 @@
 const API_KEY="AcmQLHVZiR8yOatnGZiYxPBe4NPqMdZu"
 let total_count = 0;
 
-    const PAGE_SIZE=10;
+    const PAGE_SIZE=25;
     let offset=0;
     function handleClickRandom() {
         console.log("handleClickRandom called");   
